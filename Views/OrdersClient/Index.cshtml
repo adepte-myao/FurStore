@@ -1,0 +1,40 @@
+﻿@using Common.Extensions
+@using FurStore.Common.Enums
+@using FurStore.Models.Store
+@using System.ComponentModel.DataAnnotations
+@using System.Globalization
+@model IEnumerable<Order>
+
+@functions{
+    string GetDisplay(OrderStatus os)
+    {
+        return os.GetAttribute<DisplayAttribute>().Name;
+    }
+}
+
+<table class="table">
+    <tr><th>Дата создания</th><th>Статус</th><th>Стоимость</th><th></th></tr>
+    @foreach (var order in Model)
+    {
+        <tr>
+            <td>@order.CreationTime.ToString("dd/MM/yyyy")</td>
+            <td>@GetDisplay(order.Status)</td>
+            <td>@order.TotalPrice.ToString("c", CultureInfo.CreateSpecificCulture("ru-RU"))</td>
+            <td>
+                <a class="btn btn-sm btn-primary" asp-action="Details" asp-route-id="@order.Id">Детали</a>
+                @if (order.Status == OrderStatus.OnCreation)
+                {
+                    <a class="btn btn-sm btn-success" asp-action="MakeOrder" asp-route-id="@order.Id">Заказать</a>
+                }
+                @if (order.Status == OrderStatus.Created)
+                {
+                    <a class="btn btn-sm btn-warning" asp-action="CancelOrder" asp-route-id="@order.Id">Отменить заказ</a>
+                }
+                @if (order.Status == OrderStatus.OnCreation)
+                {
+                    <a class="btn btn-sm btn-danger" asp-action="DeleteOrder" asp-route-id="@order.Id">Удалить</a>
+                }
+            </td>
+        </tr>
+    }
+</table>

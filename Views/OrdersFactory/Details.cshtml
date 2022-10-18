@@ -1,0 +1,47 @@
+﻿@using FurStore.Models.Store
+@using System.Globalization
+@model IEnumerable<FurnitureOrderElement>
+
+<table class="table">
+    <tr><th>Фото</th><th>Наименование</th><th>Цена за единицу</th><th>Количество</th><th>Сумма</th><th></th></tr>
+    @foreach (var foe in Model)
+    {
+        <tr>
+            <td class="align-middle">
+                <img src="@foe.ImageUrl" alt="@foe.Title" style="max-width: 100px"/>
+            </td>
+            <td class="align-middle">@foe.Title</td>
+            <td class="align-middle">@foe.Price.ToString("c", CultureInfo.CreateSpecificCulture("ru-RU"))</td>
+            <td class="align-middle">@foe.Amount</td>
+            <td class="align-middle">@foe.TotalPrice.ToString("c", CultureInfo.CreateSpecificCulture("ru-RU"))</td>
+            <td class="align-middle">
+            </td>
+        </tr>
+    }
+</table>
+
+@{
+    double totalPrice = 0;
+    foreach (var item in Model)
+    {
+        totalPrice += item.TotalPrice;
+    }
+}
+<div style="position: fixed; right: 25px; bottom: 25px;">
+    <p>Полная стоимость: @totalPrice.ToString("c", CultureInfo.CreateSpecificCulture("ru-RU"))</p>
+</div>
+
+@section Scripts{
+	<script>
+
+		$(document).ready(function() {
+			var output = document.getElementById("ImagePreview");
+            output.src = $("#Logo").val();
+		})
+
+		$("#Logo").on("change", function() {
+            var output = document.getElementById("ImagePreview");
+            output.src = $(this).val();
+		})
+	</script>
+}

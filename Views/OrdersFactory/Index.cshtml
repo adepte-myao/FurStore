@@ -1,0 +1,54 @@
+﻿@using Common.Extensions
+@using FurStore.Common.Enums
+@using FurStore.Models.Store
+@using System.ComponentModel.DataAnnotations
+@model IEnumerable<Order>
+
+@functions{
+string GetDisplay(OrderStatus os)
+{
+    return os.GetAttribute<DisplayAttribute>().Name;
+}
+}
+
+<table class="table">
+    <tr><th>Дата создания</th><th>Пользователь</th><th>Статус</th><th></th></tr>
+    @foreach (var order in Model)
+    {
+        <tr>
+            <td>@order.CreationTime.ToString("dd/MM/yyyy")</td>
+            @if (order.User != null)
+            {
+                <td>@order.User.UserName</td>
+            }
+            else
+            {
+                <td>Безымянный</td>
+            }
+            <td>
+                <div class="dropdown mr-1">
+                    <button type="button" class="btn btn-sm btn-primary dropdown-toggle" 
+                        aria-haspopup="true" aria-expanded="false" data-toggle="dropdown"
+                        aria-labeled='dropdown'>
+                        @GetDisplay(order.Status)
+                    </button>
+                    <div class="dropdown-menu" aria-labelledby="dropdown">
+                        @foreach (var status in Enum.GetValues<OrderStatus>())
+                        {
+                            <a class="dropdown-item" asp-action="UpdateOrderStatus" asp-route-id="@order.Id"
+                                asp-route-status="@status" asp-route-isAll="@ViewBag.IsAll">@GetDisplay(status)</a>
+                        }
+                    </div>
+                </div>
+            </td> 
+            <td>    
+                <form asp-action="DeleteOrder" asp-route-id="@order.Id" method="post">
+                    <a class="btn btn-sm btn-primary" asp-action="Details" asp-route-id="@order.Id">Детали</a>
+                    <button type="submit" class="btn btn-sm btn-danger">
+                        Удалить
+                    </button>
+                </form>
+            </td>
+        </tr>
+    }
+</table>

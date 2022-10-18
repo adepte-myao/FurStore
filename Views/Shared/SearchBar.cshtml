@@ -1,0 +1,11 @@
+﻿@using FurStore.Services.SearchServices
+
+@inject ISearchService searchService
+
+<form class="form-inline input-group" asp-controller="Furniture" asp-action="Index" method="get" style="padding-right: 15px;">
+    <select class="custom-select" style="max-width: 100px;" name="FurnitureType" asp-items="@searchService.GetFurnitureTypesForSearchSelectList()"></select>
+    <input name="SearchString" type="text" class="form-control" placeholder="Поиск по магазину..." aria-label="Recipient's username" aria-describedby="button-addon2">
+    <div class="input-group-append">
+        <button class="btn btn-outline-success" type="submit">Найти</button>
+    </div>
+</form>

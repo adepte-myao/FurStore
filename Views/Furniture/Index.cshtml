@@ -1,0 +1,104 @@
+﻿@using Common.Extensions
+@using FurStore.Common.Enums
+@using FurStore.Services.SearchServices
+@using FurStore.ViewModels.Store
+@using System.ComponentModel.DataAnnotations
+@using System.Globalization
+
+@inject ISearchService searchService
+
+@model FurnitureListVM
+
+@functions {
+    string GetDisplay(FurnitureTypes os)
+    {
+        return os.GetAttribute<DisplayAttribute>().Name;
+    }
+}
+
+@{
+    ViewData["Title"] = "Список товаров";
+}
+
+<div class="row">
+@foreach (var item in Model.Furnitures)
+{
+	<div class="col-md-4 col-xs-6 border-primary mb-3">
+        <div class="card mb-3" style="max-height: 360px;">
+            <div class="row g-0">
+                <div class="col-md-12">
+                    <div class="card-header text-white bg-info">
+                        <p class="card-text">
+                            <h5 class="card-title">
+                                @item.Title
+                                <a class="text-white float-right"><i class="bi bi-pencil-square"></i></a>
+                            </h5>
+                        </p>
+                    </div>
+                </div>
+                <div class="col-xl-6 align-self-center">
+                    <img src="@item.ImageUrl" style="height: 150px; max-width: 220px" alt="@item.Title">
+                </div>
+                <div class="col-xl-6">
+                    <div class="card-body">
+                        <p class="card-text">@item.Description</p>
+                        <p class="card-text"><b>Категория: </b>@GetDisplay(item.FurnitureType)</p>
+                            <p class="card-text"><b>Цена: </b>@item.Price.ToString("c", CultureInfo.CreateSpecificCulture("ru-RU"))</p>
+                    </div>
+                </div>
+                <div class="col-md-12">
+                    <div class="card-footer">  
+                        @if (!User.IsInRole("Factory"))
+                        {
+                            <a class="btn btn-outline-primary float-right" asp-action="Details" asp-route-id="@item.Id">
+                            <i class="bi bi-eye-fill"></i>Детали
+                            </a>
+                            <a class="btn btn-success text-white" asp-controller="OrdersClient" asp-action="AddItem" asp-route-id="@item.Id">
+                                    <i class="bi bi-cart-plus"></i>В корзину (@item.Price.ToString("c", CultureInfo.CreateSpecificCulture("ru-RU")))
+                            </a>
+                        }
+                        else
+                        {
+                            <a class="btn btn-primary float-right" asp-action="EditFurniture" asp-route-id="@item.Id">Изменить</a>
+                            <a class="btn btn-danger text-white" asp-action="DeleteFurniture" asp-route-id="@item.Id">Удалить</a>
+                        }
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+}
+</div>
+
+<div class="container">
+    @if (Model.PageViewModel.HasPreviousPage)
+    {
+        <a asp-action="Index"
+            asp-route-page="@(Model.PageViewModel.PageNumber - 1)" class="btn btn-outline-primary btn-sm">
+            Назад
+        </a>
+    }
+    @for (int i = 1; i <= Model.PageViewModel.TotalPages; i++)
+    {
+        <a asp-action="Index"
+            asp-route-page="@(i)" class="btn btn-outline-primary btn-sm">
+            @i
+        </a>
+    }
+    @if (Model.PageViewModel.HasNextPage)
+    {
+        <a asp-action="Index"
+            asp-route-page="@(Model.PageViewModel.PageNumber + 1)" class="btn btn-outline-primary btn-sm">
+            Вперед
+        </a>
+    }
+</div>
+
+@if (User.IsInRole("Factory"))
+{
+    <div style="position: fixed; right: 25px; bottom: 25px;" class="text-white">
+        <a asp-action="CreateFurniture" class="btn btn-success">
+            <i class="bi bi-plus-circle"></i> Добавить мебель
+        </a>
+    </div>
+}

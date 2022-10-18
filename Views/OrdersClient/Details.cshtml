@@ -1,0 +1,67 @@
+﻿@using FurStore.Models.Store
+@model IEnumerable<FurnitureOrderElement>
+
+@{
+    double totalPrice = 0;
+    foreach (var item in Model)
+    {
+        totalPrice += item.TotalPrice;
+    }
+}
+
+<table class="table">
+    <tr><th>Фото</th><th>Наименование</th><th>Цена за единицу</th><th>Количество</th><th>Сумма</th><th></th></tr>
+    @foreach (var foe in Model)
+    {
+        <tr>
+            <td class="align-middle">
+                <img src="@foe.ImageUrl" alt="@foe.Title" style="max-width: 100px"/>
+            </td>
+            <td class="align-middle">@foe.Title</td>
+            <td class="align-middle">@foe.Price.ToString("c")</td>
+            <td class="align-middle">
+                <div class="input-group mb-3">
+                    <div class="input-group-prepend">
+                        <a class="btn btn btn-outline-primary" asp-action="UpdateFoeAmount" asp-route-orderId="@foe.OrderId"
+                            asp-route-furId="@foe.FurnitureId" asp-route-option="-">-</a>
+                    </div>
+                    <button type="button" class="btn btn-outline-primary align-content-center" disabled style="width: 50px; ">
+                        @foe.Amount
+                    </button>
+                    <div class="input-group-append">
+                        <a class="btn btn btn-outline-primary" asp-action="UpdateFoeAmount" asp-route-orderId="@foe.OrderId"
+                            asp-route-furId="@foe.FurnitureId" asp-route-option="+">+</a>
+                    </div>
+                </div>
+            </td>
+            <td class="align-middle">@foe.TotalPrice.ToString("c")</td>
+            <td class="align-middle">
+                <form asp-action="DeleteItem" asp-route-orderId="@foe.OrderId"
+                    asp-route-itemId="@foe.FurnitureId" method="post" >
+                    @*<a class="btn btn-sm btn-primary" asp-action="Details" asp-route-id="@foe.Id">Детали</a>*@
+                    <button type="submit" class="btn btn-sm btn-danger">
+                        Удалить
+                    </button>
+                </form>
+            </td>
+        </tr>
+    }
+</table>
+<div>
+    Полная стоимость: @totalPrice.ToString("c")
+</div>
+
+@section Scripts{
+	<script>
+
+		$(document).ready(function() {
+			var output = document.getElementById("ImagePreview");
+            output.src = $("#Logo").val();
+		})
+
+		$("#Logo").on("change", function() {
+            var output = document.getElementById("ImagePreview");
+            output.src = $(this).val();
+		})
+	</script>
+}
